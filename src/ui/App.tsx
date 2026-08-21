@@ -16,8 +16,28 @@ import {
 } from '../search/coordinator';
 import { buildMatchSpec, PatternCompileError, type MatchSpec } from '../search/matcher';
 import type { BackendReport, SeedMode } from '../search/protocol';
+import type { BackupWorkerRequest, BackupWorkerResponse } from '../wallet/backup.worker';
 
 const APP_VERSION = __APP_VERSION__;
+
+// Lazy singleton worker for the deliberately-slow Hub backup KDF.
+let backupWorker: Worker | null = null;
+let backupRequestId = 0;
+function requestHubBackup(seedHex: string, password: string): Promise<{ fileName: string; json: string }> {
+  backupWorker ??= new Worker(new URL('../wallet/backup.worker.ts', import.meta.url));
+  const worker = backupWorker;
+  const requestId = ++backupRequestId;
+  return new Promise((resolve, reject) => {
+    const onMessage = (event: MessageEvent<BackupWorkerResponse>) => {
+      if (event.data.requestId !== requestId) return;
+      worker.removeEventListener('message', onMessage);
+      if (event.data.ok) resolve({ fileName: event.data.fileName, json: event.data.json });
+      else reject(new Error(event.data.message));
+    };
+    worker.addEventListener('message', onMessage);
+    worker.postMessage({ requestId, seedHex, password } satisfies BackupWorkerRequest);
+  });
+}
 
 type SearchState = 'idle' | 'calibrating' | 'searching' | 'stopping';
 
@@ -51,12 +71,80 @@ function hitExportText(hit: SearchHit): string {
       `Master seed (hex): ${hit.seedHex}`,
       '',
       'Import: this is a 64-byte Qortal master seed (index-0 address shown',
-      'above). Encrypted backup-file export is planned; until then keep this',
-      'hex somewhere safe and offline.',
+      'above). Prefer the password-encrypted Hub backup (.json) download,',
+      'which Qortal Hub imports directly; keep this plain hex offline.',
     );
   }
   lines.push('', 'Generated locally in your browser. This seed was never transmitted.', '');
   return lines.join('\n');
+}
+
+function HubBackupExport({ hit }: { hit: HitRecord }) {
+  const [open, setOpen] = useState(false);
+  const [password, setPassword] = useState('');
+  const [confirm, setConfirm] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+
+  const generate = async () => {
+    if (password.length < 5) {
+      setMessage('Use at least 5 characters.');
+      return;
+    }
+    if (password !== confirm) {
+      setMessage('Passwords do not match.');
+      return;
+    }
+    setMessage(null);
+    setBusy(true);
+    try {
+      const { fileName, json } = await requestHubBackup(hit.seedHex, password);
+      downloadText(fileName, json);
+      setMessage('Backup downloaded — import it in Qortal Hub with this password.');
+      setPassword('');
+      setConfirm('');
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : String(error));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="backup">
+      <button type="button" className="button small" onClick={() => setOpen(!open)}>
+        {open ? 'Hide Hub backup' : 'Hub backup (.json)…'}
+      </button>
+      {open && (
+        <div className="backup-form">
+          <p className="muted small">
+            Encrypts the seed with a password into a standard Qortal Hub backup file
+            (encryption runs locally and takes a few seconds).
+          </p>
+          <div className="row">
+            <input
+              type="password"
+              className="pattern-input backup-input"
+              placeholder="Password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+            />
+            <input
+              type="password"
+              className="pattern-input backup-input"
+              placeholder="Confirm password"
+              value={confirm}
+              onChange={(event) => setConfirm(event.target.value)}
+            />
+            <button type="button" className="button" disabled={busy} onClick={() => void generate()}>
+              {busy ? 'Encrypting…' : 'Encrypt & download'}
+            </button>
+          </div>
+          {message !== null && <p className="muted small">{message}</p>}
+        </div>
+      )}
+    </div>
+  );
 }
 
 function downloadText(filename: string, text: string): void {
@@ -418,6 +506,7 @@ export function App() {
                       : hit.seedHex}
                   </code>
                 )}
+                {hit.verified && hit.mode === 'master-seed' && <HubBackupExport hit={hit} />}
               </li>
             ))}
           </ul>

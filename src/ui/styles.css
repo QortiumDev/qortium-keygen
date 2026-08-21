@@ -354,3 +354,19 @@ body {
     padding: 20px 14px 48px;
   }
 }
+
+.backup {
+  margin-top: 10px;
+}
+
+.backup-form {
+  margin-top: 10px;
+  border-top: 1px solid var(--card-border);
+  padding-top: 10px;
+}
+
+.backup-input {
+  font-family: inherit;
+  font-size: 1rem;
+  min-width: 140px;
+}

@@ -35,11 +35,13 @@ where they shape the code.
 
 - [x] Raw-seed hits: base58 private seed (direct import into Qortium Home /
   Qortium Python CLI) + hex, plain-text download.
-- [ ] Master-seed hits: password-encrypted Qortal Hub backup JSON (v2 schema:
-  bcrypt-over-SHA512 KDF, HMAC-SHA512 MAC, AES-256-CBC) generated
-  client-side. Until then the hex master seed is shown with guidance.
-  **Verify the v3 (Qortium raw-key) and v2 schemas against current client
-  code before implementing — the R2 findings were partly delegated research.**
+- [x] Master-seed hits: password-encrypted Qortal Hub backup JSON (v2)
+  generated client-side in a worker. Schema verified natively against
+  Qortal-Hub source (kdf.ts, storeWallet.ts, decryptWallet.ts): 16-way
+  bcrypt-over-SHA512 with static salts (the random `salt` field is stored but
+  unused by the KDF), 31-byte macKey quirk preserved, AES-256-CBC without
+  padding, same bcryptjs library as Hub. Tests decrypt the archived real Hub
+  fixture AND reproduce its exact ciphertext/MAC byte-for-byte.
 - [ ] Label exports clearly per network: backup JSONs carry no chain
   discriminator (R2 finding).
 
