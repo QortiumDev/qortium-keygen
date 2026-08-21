@@ -424,7 +424,7 @@ async function ensureNameRegistered(name, account) {
     name,
     data: JSON.stringify({
       app: 'Keygen',
-      purpose: 'QDN raster paint app preview',
+      purpose: 'QORT vanity address generator',
     }),
   });
 
