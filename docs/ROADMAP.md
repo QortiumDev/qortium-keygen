@@ -47,11 +47,13 @@ where they shape the code.
 
 ## Dual-network publish
 
-- Qortium: `npm run qdn:publish` → `APP/Keygen/Keygen` under QortiumHomeTest
-  (script adapted from qortium-paint; QAVS manifest emitted at build time).
-- [ ] Qortal publish script: Qortal's ARBITRARY transformer keeps the 64-byte
-  `reference` field that the Qortium fork removed — needs its own signing
-  path. Target: `APP/Keygen/default` (`qortal://APP/Keygen/default`).
+- [x] Qortium: `npm run qdn:publish` → `qdn://APP/Keygen/Keygen` under
+  QortiumHomeTest (published 2026-08-21, confirmed height 100106).
+- [x] Qortal: `scripts/publish-qortal.sh` → `qortal://APP/Keygen/default`
+  under the Keygen name (registered 2026-08-21). Builds REGISTER_NAME
+  locally, signs locally (the 64-byte `reference` difference is handled by
+  the shared signer's header auto-detection), publishes via
+  ext-node.qortal.link with `--fee 0.01`.
 
 ## Open runtime acceptance checks (R3)
 
