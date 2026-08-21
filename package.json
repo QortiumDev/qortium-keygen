@@ -1,0 +1,35 @@
+{
+  "name": "qortium-keygen",
+  "version": "1.4.0",
+  "private": true,
+  "license": "0BSD",
+  "description": "QORT vanity address generator for Qortium and Qortal: search for a custom address entirely in your browser.",
+  "type": "module",
+  "scripts": {
+    "build": "tsc --noEmit && vite build",
+    "dev": "vite",
+    "preview": "vite preview",
+    "qdn:publish": "node scripts/publish-qdn.mjs",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@fontsource/lexend": "^5.2.7",
+    "@noble/hashes": "^2.0.1",
+    "@vitejs/plugin-react": "^6.0.4",
+    "hash-wasm": "^4.12.0",
+    "libsodium-wrappers": "^0.7.15",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "tweetnacl": "^1.0.3",
+    "typescript": "^6.0.3",
+    "vite": "^8.1.5"
+  },
+  "devDependencies": {
+    "@types/libsodium-wrappers": "^0.7.14",
+    "@types/node": "^25.9.5",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "jsdom": "^29.1.1",
+    "vitest": "^4.1.10"
+  }
+}
