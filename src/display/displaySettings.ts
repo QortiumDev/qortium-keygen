@@ -107,7 +107,9 @@ function settingsFromMessage(data: unknown): DisplaySettings {
 
 /** Parent/source validation follows the Home message contract. */
 export function isTrustedParentMessage(event: MessageEvent): boolean {
-  if (typeof window === 'undefined' || window.parent === window) return false;
+  if (typeof window === 'undefined') return false;
+  // Electron Home uses a top-level webContents; parent is then this window.
+  // Android iframe messages and native-injected null-source messages also work.
   return event.source == null || event.source === window.parent;
 }
 

@@ -20,8 +20,8 @@
   six text sizes, and all ten accents applied from query settings over the
   individual Home globals (`_qdnTheme`, `_qdnUiStyle`, `_qdnTextSize`,
   `_qdnAccent`), then live via parent-validated
-  `DISPLAY_SETTINGS_CHANGED` messages (accepted only from the embedding
-  parent frame). Purely presentational — no change to derivation, backup,
+  `DISPLAY_SETTINGS_CHANGED` messages (parent/self or native-injected null sources, including
+  desktop Home top-level views). Purely presentational — no change to derivation, backup,
   matcher, coordinator, or randomness. The app remains English-only; the
   Developers reference is explicitly `lang="en" dir="ltr"` regardless of host
   appearance settings.

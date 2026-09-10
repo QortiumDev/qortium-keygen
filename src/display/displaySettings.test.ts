@@ -86,10 +86,22 @@ describe('applyDisplaySettings', () => {
 });
 
 describe('isTrustedParentMessage', () => {
-  it('rejects any message when this window has no embedding parent', () => {
+  it('accepts the self source in a top-level desktop Home view', () => {
     const event = { source: window } as unknown as MessageEvent;
-    expect(isTrustedParentMessage(event)).toBe(false);
+    expect(isTrustedParentMessage(event)).toBe(true);
   });
+});
+
+it('rejects a message from an unrelated window', () => {
+  expect(isTrustedParentMessage({ source: {} } as MessageEvent)).toBe(false);
+});
+
+it('rejects a non-UI handler in a desktop Home view', () => {
+  const root = freshRoot();
+  const cleanup = initDisplaySettings(root);
+  window.dispatchEvent(new MessageEvent('message', { data: { action: 'DISPLAY_SETTINGS_CHANGED', requestedHandler: 'OTHER', theme: 'light' } }));
+  expect(root.getAttribute('data-theme')).toBeNull();
+  cleanup();
 });
 
 describe('requestedHandlerIsUi', () => {
@@ -117,13 +129,13 @@ describe('initDisplaySettings (top-level, non-embedded window)', () => {
     cleanup();
   });
 
-  it('ignores a DISPLAY_SETTINGS_CHANGED message because there is no parent frame to trust', () => {
+  it('applies native-injected display messages in a top-level desktop Home view', () => {
     const root = freshRoot();
     const cleanup = initDisplaySettings(root);
     window.dispatchEvent(
       new MessageEvent('message', { data: { action: 'DISPLAY_SETTINGS_CHANGED', settings: { theme: 'light' } } }),
     );
-    expect(root.getAttribute('data-theme')).toBeNull();
+    expect(root.getAttribute('data-theme')).toBe('light');
     cleanup();
   });
 
