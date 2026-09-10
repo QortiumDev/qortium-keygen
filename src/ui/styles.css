@@ -11,6 +11,12 @@
   --ok: #64c7a8;
   --mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
   --text-scale: 1;
+  font-size: calc(16px * var(--text-scale));
+  --surface: #262638;
+  --input-bg: #0f0f17;
+  --selected-bg: #201d33;
+  --secondary-bg: #34324c;
+  --hit-bg: #16161f;
 }
 
 /* Home fleet appearance sync (src/display/displaySettings.ts) applies these
@@ -22,6 +28,12 @@
   --card-border: #e1dff0;
   --text: #201f2b;
   --muted: #635f77;
+  --surface: #e8e6f1;
+  --input-bg: #faf9ff;
+  --selected-bg: #ede9fa;
+  --secondary-bg: #e3dfef;
+  --hit-bg: #f5f3fb;
+  --amber: #86520c;
 }
 
 :root[data-ui-style='classic'] {
@@ -55,6 +67,12 @@
 
 :root[data-text-size='medium'] {
   --text-scale: 1;
+  font-size: calc(16px * var(--text-scale));
+  --surface: #262638;
+  --input-bg: #0f0f17;
+  --selected-bg: #201d33;
+  --secondary-bg: #34324c;
+  --hit-bg: #16161f;
 }
 
 :root[data-text-size='large'] {
@@ -134,7 +152,7 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--ui-font, 'Lexend', system-ui, sans-serif);
-  font-size: calc(16px * var(--text-scale, 1));
+  font-size: 1rem;
   line-height: 1.55;
 }
 
@@ -151,7 +169,7 @@ body {
 
 :root[data-ui-style='fun'] .card {
   border-width: 2px;
-  transform: rotate(-0.15deg);
+
 }
 
 .header h1 {
@@ -198,7 +216,7 @@ body {
 .facts code {
   font-family: var(--mono);
   font-size: 0.85em;
-  background: #262638;
+  background: var(--surface);
   border-radius: 6px;
   padding: 1px 6px;
   word-break: break-all;
@@ -218,7 +236,9 @@ body {
 
 .segmented {
   display: inline-flex;
-  background: #262638;
+  flex-wrap: wrap;
+  max-width: 100%;
+  background: var(--surface);
   border-radius: 10px;
   padding: 3px;
 }
@@ -248,7 +268,7 @@ body {
   display: flex;
   align-items: center;
   padding: 0 14px;
-  background: #262638;
+  background: var(--surface);
   border: 1px solid var(--card-border);
   border-radius: 10px;
   font-family: var(--mono);
@@ -260,7 +280,7 @@ body {
 .pattern-input {
   flex: 1;
   min-width: 160px;
-  background: #0f0f17;
+  background: var(--input-bg);
   border: 1px solid var(--card-border);
   border-radius: 10px;
   color: var(--text);
@@ -330,6 +350,7 @@ body {
 
 .choice {
   display: flex;
+  overflow-wrap: anywhere;
   gap: 12px;
   align-items: flex-start;
   border: 1px solid var(--card-border);
@@ -340,7 +361,7 @@ body {
 
 .choice.active {
   border-color: var(--accent);
-  background: #201d33;
+  background: var(--selected-bg);
 }
 
 .choice input {
@@ -357,7 +378,7 @@ body {
 
 .field input {
   width: 70px;
-  background: #0f0f17;
+  background: var(--input-bg);
   border: 1px solid var(--card-border);
   border-radius: 8px;
   color: var(--text);
@@ -388,7 +409,7 @@ body {
 .button.small {
   padding: 6px 12px;
   font-size: 0.88rem;
-  background: #34324c;
+  background: var(--secondary-bg);
   color: var(--text);
 }
 
@@ -410,7 +431,7 @@ body {
   border: 1px solid var(--card-border);
   border-radius: 10px;
   padding: 12px 14px;
-  background: #16161f;
+  background: var(--hit-bg);
 }
 
 .hit-address {
@@ -446,6 +467,7 @@ body {
 
 .hit-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   margin-top: 10px;
 }
@@ -456,7 +478,7 @@ body {
   font-family: var(--mono);
   font-size: 0.9rem;
   word-break: break-all;
-  background: #0f0f17;
+  background: var(--input-bg);
   border-radius: 8px;
   padding: 10px 12px;
 }
@@ -469,8 +491,8 @@ body {
 }
 
 @media (max-width: 520px) {
-  body {
-    font-size: 15px;
+  :root {
+    font-size: calc(15px * var(--text-scale));
   }
 
   .app {
@@ -543,7 +565,7 @@ body {
 .reference-section code {
   font-family: var(--mono);
   font-size: 0.85em;
-  background: #262638;
+  background: var(--surface);
   border-radius: 6px;
   padding: 1px 6px;
   overflow-wrap: anywhere;
@@ -557,7 +579,7 @@ body {
 .code-block {
   margin: 8px 0 0;
   padding: 12px 14px;
-  background: #0f0f17;
+  background: var(--input-bg);
   border: 1px solid var(--card-border);
   border-radius: 10px;
   overflow-x: hidden;
@@ -576,6 +598,7 @@ body {
 
 .copy {
   display: inline-flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 10px;
 }
