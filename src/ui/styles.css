@@ -10,6 +10,119 @@
   --danger: #f27676;
   --ok: #64c7a8;
   --mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  --text-scale: 1;
+}
+
+/* Home fleet appearance sync (src/display/displaySettings.ts) applies these
+   as data-* attributes on <html>. Every rule below only overrides existing
+   tokens, so the app looks exactly as it did before when no host sets them. */
+:root[data-theme='light'] {
+  --bg: #f4f3fb;
+  --card: #ffffff;
+  --card-border: #e1dff0;
+  --text: #201f2b;
+  --muted: #635f77;
+}
+
+:root[data-ui-style='classic'] {
+  --radius-card: 14px;
+  --radius-control: 10px;
+  --ui-font: 'Lexend', system-ui, sans-serif;
+  --ui-weight: 400;
+}
+
+:root[data-ui-style='modern'] {
+  --radius-card: 20px;
+  --radius-control: 14px;
+  --ui-font: 'Inter', system-ui, sans-serif;
+  --ui-weight: 400;
+}
+
+:root[data-ui-style='fun'] {
+  --radius-card: 24px;
+  --radius-control: 999px;
+  --ui-font: 'Comic Neue', 'Fredoka', system-ui, sans-serif;
+  --ui-weight: 700;
+}
+
+:root[data-text-size='extra-small'] {
+  --text-scale: 0.82;
+}
+
+:root[data-text-size='small'] {
+  --text-scale: 0.9;
+}
+
+:root[data-text-size='medium'] {
+  --text-scale: 1;
+}
+
+:root[data-text-size='large'] {
+  --text-scale: 1.15;
+}
+
+:root[data-text-size='extra-large'] {
+  --text-scale: 1.35;
+}
+
+:root[data-text-size='huge'] {
+  --text-scale: 1.75;
+}
+
+:root[data-accent='clay'] {
+  --accent: #c97b56;
+  --accent-strong: #e2916b;
+}
+
+:root[data-accent='blue'] {
+  --accent: #5b9bf6;
+  --accent-strong: #7fb2ff;
+}
+
+:root[data-accent='orange'] {
+  --accent: #ed8a4d;
+  --accent-strong: #ffad70;
+}
+
+:root[data-accent='purple'] {
+  --accent: #9b7cf5;
+  --accent-strong: #b79cff;
+}
+
+:root[data-accent='red'] {
+  --accent: #ed6b6b;
+  --accent-strong: #ff9292;
+}
+
+:root[data-accent='teal'] {
+  --accent: #39b5aa;
+  --accent-strong: #6ed8ce;
+}
+
+:root[data-accent='cyan'] {
+  --accent: #43b9d5;
+  --accent-strong: #7bdcf3;
+}
+
+:root[data-accent='green'] {
+  --accent: #4fb286;
+  --accent-strong: #6fd0a4;
+}
+
+:root[data-accent='pink'] {
+  --accent: #e17bb0;
+  --accent-strong: #f39bcb;
+}
+
+:root[data-accent='yellow'] {
+  --accent: #e2c84e;
+  --accent-strong: #f5df79;
+}
+
+:root[data-ui-style] body,
+:root[data-ui-style] .app {
+  font-family: var(--ui-font, 'Lexend', system-ui, sans-serif);
+  font-weight: var(--ui-weight, 400);
 }
 
 * {
@@ -20,8 +133,8 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: 'Lexend', system-ui, sans-serif;
-  font-size: 16px;
+  font-family: var(--ui-font, 'Lexend', system-ui, sans-serif);
+  font-size: calc(16px * var(--text-scale, 1));
   line-height: 1.55;
 }
 
@@ -29,6 +142,16 @@ body {
   max-width: 780px;
   margin: 0 auto;
   padding: 28px 20px 60px;
+  direction: ltr;
+}
+
+:root[data-ui-style='modern'] .card {
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.12);
+}
+
+:root[data-ui-style='fun'] .card {
+  border-width: 2px;
+  transform: rotate(-0.15deg);
 }
 
 .header h1 {
@@ -51,7 +174,7 @@ body {
 .card {
   background: var(--card);
   border: 1px solid var(--card-border);
-  border-radius: 14px;
+  border-radius: var(--radius-card, 14px);
   padding: 18px 20px;
   margin-top: 18px;
 }
@@ -244,7 +367,7 @@ body {
 
 .button {
   border: 0;
-  border-radius: 10px;
+  border-radius: var(--radius-control, 10px);
   background: var(--accent);
   color: #14101f;
   font: inherit;
@@ -369,4 +492,101 @@ body {
   font-family: inherit;
   font-size: 1rem;
   min-width: 140px;
+}
+
+.workspace-nav {
+  margin-top: 14px;
+}
+
+/* Panes stay mounted at all times; `hidden` (not conditional rendering) is
+   what keeps a running search alive while the Developers pane is shown, and
+   vice versa. Declared with the attribute selector so no later rule can
+   accidentally out-specificity it back into view. */
+.workspace-pane[hidden] {
+  display: none;
+}
+
+.developers-pane {
+  margin-top: 18px;
+}
+
+.developers-scroll {
+  /* Its own scroll region — independent of the outer page scroll — so long
+     reference content scrolls predictably on phones instead of fighting the
+     document scroll or a virtual keyboard. */
+  max-height: min(78dvh, 900px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  padding-right: 2px;
+}
+
+.reference-toc {
+  margin: 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.reference-toc a {
+  color: var(--accent-strong);
+  text-decoration: none;
+}
+
+.reference-toc a:hover,
+.reference-toc a:focus-visible {
+  text-decoration: underline;
+}
+
+.reference-section code {
+  font-family: var(--mono);
+  font-size: 0.85em;
+  background: #262638;
+  border-radius: 6px;
+  padding: 1px 6px;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.schema-block {
+  margin: 10px 0;
+}
+
+.code-block {
+  margin: 8px 0 0;
+  padding: 12px 14px;
+  background: #0f0f17;
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  overflow-x: hidden;
+}
+
+.code-block code {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  background: none;
+  padding: 0;
+}
+
+.copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.copy-status {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+@media (max-width: 520px) {
+  .developers-scroll {
+    max-height: min(72dvh, 900px);
+  }
 }

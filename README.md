@@ -10,13 +10,31 @@ case-insensitive), see the exact difficulty and a probabilistic time estimate
 then search across Web Workers. Every hit is independently re-derived with a
 second crypto implementation before it is shown.
 
+A **Developers** workspace sits beside the Generator (`?view=developers`,
+aliases `developer`/`reference`, which are canonicalized on mount): a technical reference on address
+derivation, the Hub backup v2 schema, the search worker protocol, calibration
+storage, estimator precision, and crypto/hosting caveats — verified against
+the current code, with inert placeholder examples (no real seeds/keys).
+Switching workspaces never stops a running search or clears a draft: both
+stay mounted, only hidden.
+
+Reference links use `?section=<known-id>` and preserve the host URL fragment,
+unknown/repeated query keys, and exact `history.state`; they never put Generator
+patterns, hits, seeds, or passwords in the URL. When embedded in a Home-style
+shell, Keygen syncs appearance (theme, `uiStyle`, six text sizes, and ten
+accents) from query settings over the individual `_qdnTheme`, `_qdnUiStyle`,
+`_qdnTextSize`, and `_qdnAccent` globals, then accepts guarded
+`DISPLAY_SETTINGS_CHANGED` messages from the embedding parent — see
+`src/display/displaySettings.ts`.
+
 ## How it derives addresses
 
 Byte-identical to Qortal Hub / Qortal UI `PhraseWallet` v2 and Qortium Core,
 pinned by golden-vector tests (`src/crypto/derive.test.ts`):
 
 - **Master-seed mode** (Qortal Hub compatible): random 64-byte master seed →
-  `SHA512`-based index-0 derivation → ed25519 → `Base58Check(0x3A ‖ hash160)`.
+  `x = int32be(0) ‖ seed64 ‖ int32be(0)`, `h1 = SHA512(x)`, then
+  `SHA512(h1 ‖ x)[:32]` → ed25519 → `Base58Check(0x3A ‖ hash160)`.
 - **Raw-seed mode** (Qortium Home / CLI): random 32-byte ed25519 seed used
   directly — skips both SHA-512 passes, so it searches faster. Qortal Hub has
   no raw-key import, hence the mode choice in the UI.
